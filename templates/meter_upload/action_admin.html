@@ -1,0 +1,48 @@
+<form action="?" method="post" name="frmMeterUpload" class="form-horizontal">
+<div class="form-group">
+ <label class="control-label"><#LANG_MU_PROVIDER#></label>
+ <div class="controls"><select name="provider" class="form-control">
+  <option value="custom"[#if PROVIDER="custom"#] selected[#endif#]>Custom</option>
+  <option value="tesk"[#if PROVIDER="tesk"#] selected[#endif#]>ТЭСК</option>
+  <option value="tosk"[#if PROVIDER="tosk"#] selected[#endif#]>ТОСК</option>
+  <option value="saures"[#if PROVIDER="saures"#] selected[#endif#]>Saures</option>
+  <option value="mygas"[#if PROVIDER="mygas"#] selected[#endif#]>Мой газ</option>
+ </select></div>
+</div>
+<div class="form-group">
+ <label class="control-label"><#LANG_MU_ENDPOINT#></label>
+ <div class="controls"><input type="text" name="endpoint" value="[#ENDPOINT#]" class="form-control" placeholder="https://..."></div>
+</div>
+<div class="form-group">
+ <label class="control-label"><#LANG_MU_ACCOUNT#></label>
+ <div class="controls"><input type="text" name="account" value="[#ACCOUNT#]" class="form-control"></div>
+</div>
+<div class="form-group">
+ <label class="control-label"><#LANG_MU_TOKEN#></label>
+ <div class="controls"><input type="password" name="token" value="" class="form-control" placeholder="[#TOKEN_MASK#]" autocomplete="new-password"></div>
+</div>
+<div class="form-group">
+ <label class="control-label"><#LANG_MU_METERS#></label>
+ <div class="controls"><textarea name="meters" rows="6" class="form-control">[#METERS#]</textarea></div>
+</div>
+<div class="form-group">
+ <div class="controls"><label><input type="checkbox" name="enabled" value="1"[#if ENABLED="1"#] checked[#endif#]> <#LANG_MU_ENABLED#></label></div>
+</div>
+<div class="form-actions">
+ <button type="submit" name="subm" class="btn btn-primary"><#LANG_UPDATE#></button>
+ <button type="button" onclick="return muTest();" class="btn btn-default"><#LANG_MU_TEST#></button>
+ <input type="hidden" name="mode" value="update">
+</div>
+</form>
+<p class="help-block"><#LANG_MU_HINT#></p>
+<script>
+function muTest() {
+ var data = new FormData();
+ data.append('values', '{}');
+ fetch('/modules/meter_upload/ajax.php', {method:'POST', body:data, credentials:'same-origin'})
+ .then(function(r){return r.json();})
+ .then(function(res){alert(res.status + ': ' + res.msg);})
+ .catch(function(){alert('<#LANG_MU_ERROR#>');});
+ return false;
+}
+</script>

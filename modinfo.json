@@ -1,0 +1,9 @@
+{
+  "name": "meter_upload",
+  "version": "2.0.0",
+  "title": "Meter readings upload v2",
+  "description": "Local-first upload of utility meter readings with pluggable providers",
+  "author": "mambursoft",
+  "license": "MIT",
+  "category": "system"
+}
