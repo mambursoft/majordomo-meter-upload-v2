@@ -14,6 +14,11 @@ if (!$access->checkAccess('meter_upload')) {
 }
 include_once(DIR_MODULES . 'meter_upload/meter_upload.class.php');
 $module = new meter_upload();
+$op = isset($_POST['op']) ? (string)$_POST['op'] : '';
+if ($op === 'sync') {
+    echo json_encode($module->syncQueue());
+    exit;
+}
 $values = json_decode((string)(isset($_POST['values']) ? $_POST['values'] : ''), true);
 if (!is_array($values)) {
     echo json_encode(array('status' => 'error', 'msg' => 'Invalid readings'));

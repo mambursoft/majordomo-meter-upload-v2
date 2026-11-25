@@ -7,6 +7,10 @@
   <option value="tosk"[#if PROVIDER="tosk"#] selected[#endif#]>ТОСК</option>
   <option value="saures"[#if PROVIDER="saures"#] selected[#endif#]>Saures</option>
   <option value="mygas"[#if PROVIDER="mygas"#] selected[#endif#]>Мой газ</option>
+  <option value="kyivenergo"[#if PROVIDER="kyivenergo"#] selected[#endif#]>Київенерго (UA)</option>
+  <option value="kyivgaz"[#if PROVIDER="kyivgaz"#] selected[#endif#]>Київгаз (UA)</option>
+  <option value="ukrgaz"[#if PROVIDER="ukrgaz"#] selected[#endif#]>Укргаз (UA)</option>
+  <option value="lvivgaz"[#if PROVIDER="lvivgaz"#] selected[#endif#]>Львівгаз (UA)</option>
  </select></div>
 </div>
 <div class="form-group">
@@ -16,6 +20,14 @@
 <div class="form-group">
  <label class="control-label"><#LANG_MU_ACCOUNT#></label>
  <div class="controls"><input type="text" name="account" value="[#ACCOUNT#]" class="form-control"></div>
+</div>
+<div class="form-group">
+ <label class="control-label"><#LANG_MU_UNIT#></label>
+ <div class="controls"><select name="unit" class="form-control">
+  <option value="kWh"[#if UNIT="kWh"#] selected[#endif#]>кВт·год (kWh)</option>
+  <option value="m3"[#if UNIT="m3"#] selected[#endif#]>м³ (m3)</option>
+  <option value="Gcal"[#if UNIT="Gcal"#] selected[#endif#]>Гкал (Gcal)</option>
+ </select></div>
 </div>
 <div class="form-group">
  <label class="control-label"><#LANG_MU_TOKEN#></label>
@@ -31,6 +43,7 @@
 <div class="form-actions">
  <button type="submit" name="subm" class="btn btn-primary"><#LANG_UPDATE#></button>
  <button type="button" onclick="return muTest();" class="btn btn-default"><#LANG_MU_TEST#></button>
+ <button type="button" onclick="return muSync();" class="btn btn-default"><#LANG_MU_SYNC#> ([#QUEUE_COUNT#])</button>
  <input type="hidden" name="mode" value="update">
 </div>
 </form>
@@ -42,6 +55,15 @@ function muTest() {
  fetch('/modules/meter_upload/ajax.php', {method:'POST', body:data, credentials:'same-origin'})
  .then(function(r){return r.json();})
  .then(function(res){alert(res.status + ': ' + res.msg);})
+ .catch(function(){alert('<#LANG_MU_ERROR#>');});
+ return false;
+}
+function muSync() {
+ var data = new FormData();
+ data.append('op', 'sync');
+ fetch('/modules/meter_upload/ajax.php', {method:'POST', body:data, credentials:'same-origin'})
+ .then(function(r){return r.json();})
+ .then(function(res){alert(res.msg + ' / ' + res.remaining); location.reload();})
  .catch(function(){alert('<#LANG_MU_ERROR#>');});
  return false;
 }
