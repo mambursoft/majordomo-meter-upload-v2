@@ -6,6 +6,15 @@ The setting **Provider** includes presets for Ukrainian services: `Київен�
 
 Supported units: `кВт·год (kWh)`, `м³ (m3)`, `Гкал (Gcal)`. Use the unit that your provider expects.
 
+## Individuals and legal entities
+
+The **Client type** setting separates two Ukrainian scenarios:
+
+- `Individual` (фізична особа): use the personal account number (`особовий рахунок`).
+- `Legal entity` (юридична особа): fill company name, `ЄДРПОУ` and `IBAN` in addition to the account.
+
+The payload sent to the provider includes `entity_type`, `company`, `edrpou` and `iban`. Extra fields are empty for individuals, so the same preset works for both without storing unnecessary data.
+
 ## Setup
 
 1. Install the module and open **Control Panel → Meter Upload v2**.

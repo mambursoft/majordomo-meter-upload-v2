@@ -18,6 +18,27 @@
  <div class="controls"><input type="text" name="endpoint" value="[#ENDPOINT#]" class="form-control" placeholder="https://..."></div>
 </div>
 <div class="form-group">
+ <label class="control-label"><#LANG_MU_ENTITY#></label>
+ <div class="controls"><select name="entity_type" id="mu_entity" class="form-control" onchange="muToggleEntity();">
+  <option value="individual"[#if ENTITY_TYPE="individual"#] selected[#endif#]><#LANG_MU_INDIVIDUAL#></option>
+  <option value="legal"[#if ENTITY_TYPE="legal"#] selected[#endif#]><#LANG_MU_LEGAL#></option>
+ </select></div>
+</div>
+<div id="mu_legal_fields" [#if ENTITY_TYPE!="legal"#]style="display:none"[#endif#]>
+ <div class="form-group">
+  <label class="control-label"><#LANG_MU_COMPANY#></label>
+  <div class="controls"><input type="text" name="company_name" value="[#COMPANY_NAME#]" class="form-control"></div>
+ </div>
+ <div class="form-group">
+  <label class="control-label"><#LANG_MU_EDRPOU#></label>
+  <div class="controls"><input type="text" name="edrpou" value="[#EDRPOU#]" class="form-control" placeholder="12345678"></div>
+ </div>
+ <div class="form-group">
+  <label class="control-label"><#LANG_MU_IBAN#></label>
+  <div class="controls"><input type="text" name="iban" value="[#IBAN#]" class="form-control" placeholder="UA..."></div>
+ </div>
+</div>
+<div class="form-group">
  <label class="control-label"><#LANG_MU_ACCOUNT#></label>
  <div class="controls"><input type="text" name="account" value="[#ACCOUNT#]" class="form-control"></div>
 </div>
@@ -49,6 +70,11 @@
 </form>
 <p class="help-block"><#LANG_MU_HINT#></p>
 <script>
+function muToggleEntity() {
+ var legal = document.getElementById('mu_entity').value === 'legal';
+ var box = document.getElementById('mu_legal_fields');
+ if (box) box.style.display = legal ? '' : 'none';
+}
 function muTest() {
  var data = new FormData();
  data.append('values', '{}');

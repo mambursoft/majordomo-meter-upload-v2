@@ -13,5 +13,11 @@ $dictionary=array(
 'MU_LAST_RESULT'=>'Последний результат',
 'MU_UNIT' => 'Единица измерения',
 'MU_SYNC' => 'Отправить очередь',
+'MU_ENTITY' => 'Тип клиента',
+'MU_INDIVIDUAL' => 'Физическое лицо',
+'MU_LEGAL' => 'Юридическое лицо',
+'MU_COMPANY' => 'Название предприятия',
+'MU_EDRPOU' => 'Код ЕДРПОУ',
+'MU_IBAN' => 'IBAN',
 );
 foreach($dictionary as $k=>$v){if(!defined('LANG_'.$k))define('LANG_'.$k,$v);}

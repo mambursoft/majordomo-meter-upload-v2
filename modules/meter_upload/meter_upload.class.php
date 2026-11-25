@@ -46,6 +46,10 @@ class meter_upload extends module
         $out['PROVIDER'] = isset($this->config['PROVIDER']) ? $this->config['PROVIDER'] : 'custom';
         $out['ENDPOINT'] = isset($this->config['ENDPOINT']) ? $this->config['ENDPOINT'] : '';
         $out['ACCOUNT'] = isset($this->config['ACCOUNT']) ? $this->config['ACCOUNT'] : '';
+        $out['ENTITY_TYPE'] = isset($this->config['ENTITY_TYPE']) ? $this->config['ENTITY_TYPE'] : 'individual';
+        $out['COMPANY_NAME'] = isset($this->config['COMPANY_NAME']) ? $this->config['COMPANY_NAME'] : '';
+        $out['EDRPOU'] = isset($this->config['EDRPOU']) ? $this->config['EDRPOU'] : '';
+        $out['IBAN'] = isset($this->config['IBAN']) ? $this->config['IBAN'] : '';
         $out['METERS'] = isset($this->config['METERS']) ? $this->config['METERS'] : '';
         $out['ENABLED'] = isset($this->config['ENABLED']) ? (int)$this->config['ENABLED'] : 0;
         $out['LAST_RESULT'] = isset($this->config['LAST_RESULT']) ? $this->config['LAST_RESULT'] : '';
@@ -63,7 +67,12 @@ class meter_upload extends module
             }
             $this->config['PROVIDER'] = $provider ? $provider : 'custom';
             $this->config['ENDPOINT'] = $endpoint;
+            $entity = (string)gr('entity_type');
+            $this->config['ENTITY_TYPE'] = in_array($entity, array('individual', 'legal'), true) ? $entity : 'individual';
             $this->config['ACCOUNT'] = trim((string)gr('account'));
+            $this->config['COMPANY_NAME'] = trim((string)gr('company_name'));
+            $this->config['EDRPOU'] = preg_replace('/[^0-9]/', '', (string)gr('edrpou'));
+            $this->config['IBAN'] = preg_replace('/[^A-Za-z0-9]/', '', (string)gr('iban'));
             $this->config['METERS'] = trim((string)gr('meters'));
             $this->config['ENABLED'] = gr('enabled') ? 1 : 0;
             $unit = (string)gr('unit');
@@ -157,6 +166,10 @@ class meter_upload extends module
             'account' => isset($this->config['ACCOUNT']) ? $this->config['ACCOUNT'] : '',
             'provider' => isset($this->config['PROVIDER']) ? $this->config['PROVIDER'] : 'custom',
             'unit' => isset($this->config['UNIT']) ? $this->config['UNIT'] : 'kWh',
+            'entity_type' => isset($this->config['ENTITY_TYPE']) ? $this->config['ENTITY_TYPE'] : 'individual',
+            'company' => isset($this->config['COMPANY_NAME']) ? $this->config['COMPANY_NAME'] : '',
+            'edrpou' => isset($this->config['EDRPOU']) ? $this->config['EDRPOU'] : '',
+            'iban' => isset($this->config['IBAN']) ? $this->config['IBAN'] : '',
             'readings' => array()
         );
         foreach ($values as $code => $value) {
