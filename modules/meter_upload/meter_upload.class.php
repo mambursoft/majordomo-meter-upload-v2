@@ -45,6 +45,11 @@ class meter_upload extends module
 
         $out['PROVIDER'] = isset($this->config['PROVIDER']) ? $this->config['PROVIDER'] : 'custom';
         $out['ENDPOINT'] = isset($this->config['ENDPOINT']) ? $this->config['ENDPOINT'] : '';
+        $out['SERVICE_MODE'] = isset($this->config['SERVICE_MODE']) ? $this->config['SERVICE_MODE'] : 'api';
+        $providers = $this->providers();
+        $provider = $out['PROVIDER'];
+        $out['PROVIDER_INFO'] = isset($providers[$provider]) ? $providers[$provider]['note'] : '';
+        $out['SERVICE_URL'] = isset($this->config['SERVICE_URL']) ? $this->config['SERVICE_URL'] : (isset($providers[$provider]) ? $providers[$provider]['url'] : '');
         $out['ACCOUNT'] = isset($this->config['ACCOUNT']) ? $this->config['ACCOUNT'] : '';
         $out['ENTITY_TYPE'] = isset($this->config['ENTITY_TYPE']) ? $this->config['ENTITY_TYPE'] : 'individual';
         $out['COMPANY_NAME'] = isset($this->config['COMPANY_NAME']) ? $this->config['COMPANY_NAME'] : '';
@@ -66,6 +71,9 @@ class meter_upload extends module
                 $endpoint = 'https://' . $endpoint;
             }
             $this->config['PROVIDER'] = $provider ? $provider : 'custom';
+            $mode = (string)gr('service_mode');
+            $this->config['SERVICE_MODE'] = in_array($mode, array('api', 'manual'), true) ? $mode : 'api';
+            $this->config['SERVICE_URL'] = trim((string)gr('service_url'));
             $this->config['ENDPOINT'] = $endpoint;
             $entity = (string)gr('entity_type');
             $this->config['ENTITY_TYPE'] = in_array($entity, array('individual', 'legal'), true) ? $entity : 'individual';
@@ -107,6 +115,21 @@ class meter_upload extends module
             }
         }
         return $result;
+    }
+
+    function providers()
+    {
+        return array(
+            'yasno' => array('title' => 'Ясно (electricity/gas)', 'url' => 'https://yasno.ua/indicators', 'mode' => 'manual', 'entities' => 'individual,legal', 'note' => 'No public API. The site accepts readings by account or address; login is needed for history.'),
+            'kyivvodokanal' => array('title' => 'КиївВодоканал (water)', 'url' => 'https://my.vodokanal.kiev.ua/', 'mode' => 'manual', 'entities' => 'individual', 'note' => 'Personal cabinet or quick form at https://kvkmeters.ssmt.com.ua/. No public API.'),
+            'kyivteplo' => array('title' => 'Київтеплоенерго (heat/hot water)', 'url' => 'https://kte.kmda.gov.ua/my-cabinet/', 'mode' => 'manual', 'entities' => 'individual', 'note' => 'Needs 15-digit account, house and apartment; captcha is used.'),
+            'dtek' => array('title' => 'ДТЕК Київські електромережі', 'url' => 'https://www.dtek-kem.com.ua/ua/meter', 'mode' => 'manual', 'entities' => 'individual', 'note' => 'Web form works without registration; no public API.'),
+            'kyivgaz' => array('title' => 'Київгаз', 'url' => 'https://kyivgaz.ua/', 'mode' => 'manual', 'entities' => 'individual,legal', 'note' => 'Submit readings through the operator site; no public API.'),
+            'lvivgaz' => array('title' => 'Львівгаз', 'url' => 'https://lvivgaz.ua/', 'mode' => 'manual', 'entities' => 'individual,legal', 'note' => 'Submit readings through the operator site; no public API.'),
+            'tesk' => array('title' => 'ТЭСК (RU)', 'url' => '', 'mode' => 'api', 'entities' => 'individual', 'note' => 'Use the endpoint and token from your personal account.'),
+            'tosk' => array('title' => 'ТОСК (RU)', 'url' => '', 'mode' => 'api', 'entities' => 'individual', 'note' => 'Use the endpoint and token from your personal account.'),
+            'custom' => array('title' => 'Custom endpoint', 'url' => '', 'mode' => 'api', 'entities' => 'individual,legal', 'note' => 'JSON POST to the configured URL.')
+        );
     }
 
     function queueFile()
@@ -153,15 +176,37 @@ class meter_upload extends module
         if (empty($this->config['ENABLED'])) {
             return array('status' => 'error', 'msg' => 'Module is disabled');
         }
+        $mode = isset($this->config['SERVICE_MODE']) ? $this->config['SERVICE_MODE'] : 'api';
+        $values = isset($params['values']) && is_array($params['values']) ? $params['values'] : array();
+        $known = $this->parseMeters();
+        if ($mode === 'manual') {
+            $providers = $this->providers();
+            $provider = isset($this->config['PROVIDER']) ? $this->config['PROVIDER'] : 'custom';
+            $url = isset($this->config['SERVICE_URL']) && $this->config['SERVICE_URL']
+                ? $this->config['SERVICE_URL']
+                : (isset($providers[$provider]) ? $providers[$provider]['url'] : '');
+            $query = array('account' => isset($this->config['ACCOUNT']) ? $this->config['ACCOUNT'] : '');
+            foreach ($values as $code => $value) {
+                $code = preg_replace('/[^A-Za-z0-9_-]/', '', (string)$code);
+                if ($known && !isset($known[$code])) {
+                    continue;
+                }
+                $query['value_' . $code] = (float)$value;
+            }
+            return array(
+                'status' => 'manual',
+                'msg' => isset($providers[$provider]) ? $providers[$provider]['note'] : 'Open the provider site and enter the readings manually.',
+                'url' => $url . ($query ? '?' . http_build_query($query) : ''),
+                'sent' => count($query) - 1
+            );
+        }
         $endpoint = isset($this->config['ENDPOINT']) ? $this->config['ENDPOINT'] : '';
         if (!$endpoint) {
             return array('status' => 'error', 'msg' => 'Endpoint is not configured');
         }
-        $values = isset($params['values']) && is_array($params['values']) ? $params['values'] : array();
         if (!$values) {
             return array('status' => 'error', 'msg' => 'No readings supplied');
         }
-        $known = $this->parseMeters();
         $payload = array(
             'account' => isset($this->config['ACCOUNT']) ? $this->config['ACCOUNT'] : '',
             'provider' => isset($this->config['PROVIDER']) ? $this->config['PROVIDER'] : 'custom',

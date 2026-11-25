@@ -7,11 +7,25 @@
   <option value="tosk"[#if PROVIDER="tosk"#] selected[#endif#]>ТОСК</option>
   <option value="saures"[#if PROVIDER="saures"#] selected[#endif#]>Saures</option>
   <option value="mygas"[#if PROVIDER="mygas"#] selected[#endif#]>Мой газ</option>
-  <option value="kyivenergo"[#if PROVIDER="kyivenergo"#] selected[#endif#]>Київенерго (UA)</option>
+  <option value="yasno"[#if PROVIDER="yasno"#] selected[#endif#]>Ясно (UA)</option>
+  <option value="kyivvodokanal"[#if PROVIDER="kyivvodokanal"#] selected[#endif#]>КиївВодоканал (UA)</option>
+  <option value="kyivteplo"[#if PROVIDER="kyivteplo"#] selected[#endif#]>Київтеплоенерго (UA)</option>
+  <option value="dtek"[#if PROVIDER="dtek"#] selected[#endif#]>ДТЕК Київські електромережі (UA)</option>
   <option value="kyivgaz"[#if PROVIDER="kyivgaz"#] selected[#endif#]>Київгаз (UA)</option>
-  <option value="ukrgaz"[#if PROVIDER="ukrgaz"#] selected[#endif#]>Укргаз (UA)</option>
   <option value="lvivgaz"[#if PROVIDER="lvivgaz"#] selected[#endif#]>Львівгаз (UA)</option>
  </select></div>
+ <p class="help-block">[#PROVIDER_INFO#]</p>
+</div>
+<div class="form-group">
+ <label class="control-label"><#LANG_MU_MODE#></label>
+ <div class="controls"><select name="service_mode" class="form-control">
+  <option value="api"[#if SERVICE_MODE="api"#] selected[#endif#]><#LANG_MU_MODE_API#></option>
+  <option value="manual"[#if SERVICE_MODE="manual"#] selected[#endif#]><#LANG_MU_MODE_MANUAL#></option>
+ </select></div>
+</div>
+<div class="form-group">
+ <label class="control-label"><#LANG_MU_SERVICE_URL#></label>
+ <div class="controls"><input type="text" name="service_url" value="[#SERVICE_URL#]" class="form-control"></div>
 </div>
 <div class="form-group">
  <label class="control-label"><#LANG_MU_ENDPOINT#></label>

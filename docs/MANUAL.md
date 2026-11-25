@@ -2,7 +2,7 @@
 
 ## Ukrainian providers
 
-The setting **Provider** includes presets for Ukrainian services: `Київенерго (UA)`, `Київгаз (UA)`, `Укргаз (UA)`, `Львівгаз (UA)`. The exact endpoint and token must be taken from your personal account: providers change URLs and confirmation flows, so the module stores them as settings instead of hardcoding.
+The setting **Provider** includes presets for Ukrainian services: `Київенерго (UA)`, `Київгаз (UA)`, `Укргаз (UA)`, `Львівгаз (UA)`. The exact endpoint and token must be taken from your personal account: providers change URLs and confirmation flows, so the module stores them as settings instead of hardcoding. Most Ukrainian providers have no public API — see `docs/UA_PROVIDERS.md` for the reviewed list and the recommended `manual` submission mode.
 
 Supported units: `кВт·год (kWh)`, `м³ (m3)`, `Гкал (Gcal)`. Use the unit that your provider expects.
 
